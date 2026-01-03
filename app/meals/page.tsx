@@ -5,6 +5,12 @@ import { format } from "date-fns";
 import { MealEntryGrid } from "../../components/MealEntryGrid";
 import { isAdmin } from "@/lib/auth-utils";
 
+type Member = {
+  id: string;
+  name: string;
+  isActive: boolean;
+};
+
 export default async function MealsPage({
   searchParams,
 }: {
@@ -43,7 +49,7 @@ export default async function MealsPage({
         </div>
 
         <MealEntryGrid
-          members={members.filter((m) => m.isActive)}
+          members={(members as Member[]).filter((m: Member) => m.isActive)}
           initialMeals={meals}
           date={selectedDate}
           isLocked={isLocked || !admin}

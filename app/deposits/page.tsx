@@ -4,6 +4,19 @@ import { format } from "date-fns";
 import { Wallet, PlusCircle, User, Calendar } from "lucide-react";
 import { isAdmin } from "@/lib/auth-utils";
 
+type Deposit = {
+  id: string;
+  amount: number;
+  date: Date;
+  member: { id: string; name: string };
+};
+
+type Member = {
+  id: string;
+  name: string;
+  isActive: boolean;
+};
+
 export default async function DepositsPage({
   searchParams,
 }: {
@@ -13,7 +26,10 @@ export default async function DepositsPage({
   const currentMonthYear = params.month || format(new Date(), "yyyy-MM");
   const deposits = await getMonthlyDeposits(currentMonthYear);
   const members = await getMembers();
-  const total = deposits.reduce((sum, d) => sum + d.amount, 0);
+  const total = (deposits as Deposit[]).reduce(
+    (sum: number, d: Deposit) => sum + d.amount,
+    0
+  );
   const admin = await isAdmin();
 
   return (
@@ -28,7 +44,9 @@ export default async function DepositsPage({
           </p>
         </div>
         {admin && (
-          <AddDepositForm members={members.filter((m) => m.isActive)} />
+          <AddDepositForm
+            members={(members as Member[]).filter((m: Member) => m.isActive)}
+          />
         )}
       </div>
 
@@ -71,7 +89,7 @@ export default async function DepositsPage({
                       </td>
                     </tr>
                   ) : (
-                    deposits.map((deposit) => (
+                    (deposits as Deposit[]).map((deposit: Deposit) => (
                       <tr
                         key={deposit.id}
                         className="hover:bg-slate-900/40 transition-colors"
@@ -128,7 +146,7 @@ export default async function DepositsPage({
   );
 }
 
-function AddDepositForm({ members }: { members: any[] }) {
+function AddDepositForm({ members }: { members: Member[] }) {
   return (
     <div className="card p-4 bg-slate-900/30">
       <form
@@ -147,7 +165,7 @@ function AddDepositForm({ members }: { members: any[] }) {
           </label>
           <select name="memberId" className="input" required>
             <option value="">Select Member...</option>
-            {members.map((m) => (
+            {members.map((m: Member) => (
               <option key={m.id} value={m.id}>
                 {m.name}
               </option>

@@ -6,6 +6,12 @@ import {
 import { Users, UserPlus, ToggleLeft, ToggleRight } from "lucide-react";
 import { isAdmin } from "@/lib/auth-utils";
 
+type Member = {
+  id: string;
+  name: string;
+  isActive: boolean;
+};
+
 export default async function MembersPage() {
   const members = await getMembers();
   const admin = await isAdmin();
@@ -25,7 +31,7 @@ export default async function MembersPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {members.map((member) => (
+        {(members as Member[]).map((member: Member) => (
           <div
             key={member.id}
             className="card p-6 flex items-center justify-between group"

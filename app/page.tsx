@@ -7,7 +7,15 @@ import {
   TrendingUp,
   Users,
   Calendar,
+  type LucideIcon,
 } from "lucide-react";
+
+type DashboardMember = {
+  id: string;
+  name: string;
+  depositAmount: number;
+  mealCount: number;
+};
 
 export default async function DashboardPage({
   searchParams,
@@ -125,7 +133,7 @@ export default async function DashboardPage({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/40">
-              {members?.map((member, idx) => (
+              {members?.map((member: DashboardMember, idx: number) => (
                 <tr
                   key={member.id}
                   className="hover:bg-slate-800/30 transition-all duration-300 group/row"
@@ -182,7 +190,7 @@ function StatCard({
 }: {
   title: string;
   value: string;
-  icon: any;
+  icon: LucideIcon;
   color: "indigo" | "rose" | "emerald" | "amber";
   trend?: string;
   highlight?: boolean;

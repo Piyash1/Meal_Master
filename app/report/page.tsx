@@ -9,6 +9,15 @@ import {
   AlertCircle,
 } from "lucide-react";
 
+type MemberSummary = {
+  id: string;
+  totalMeals: number;
+  totalDeposit: number;
+  totalCost: number;
+  balance: number;
+  member: { id: string; name: string };
+};
+
 export default async function ReportPage({
   searchParams,
 }: {
@@ -20,9 +29,15 @@ export default async function ReportPage({
 
   const isLocked = summary?.isLocked || false;
   const totalMeals =
-    summary?.summaries.reduce((sum, s) => sum + s.totalMeals, 0) || 0;
+    (summary?.summaries as MemberSummary[] | undefined)?.reduce(
+      (sum: number, s: MemberSummary) => sum + s.totalMeals,
+      0
+    ) || 0;
   const totalCost =
-    summary?.summaries.reduce((sum, s) => sum + s.totalCost, 0) || 0;
+    (summary?.summaries as MemberSummary[] | undefined)?.reduce(
+      (sum: number, s: MemberSummary) => sum + s.totalCost,
+      0
+    ) || 0;
   const mealRate = totalMeals > 0 ? totalCost / totalMeals : 0;
 
   return (
@@ -131,45 +146,47 @@ export default async function ReportPage({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800">
-                  {summary.summaries.map((s) => (
-                    <tr
-                      key={s.id}
-                      className="hover:bg-slate-900/40 transition-colors"
-                    >
-                      <td className="px-6 py-4 font-medium flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold text-indigo-400">
-                          {s.member.name[0]}
-                        </div>
-                        {s.member.name}
-                      </td>
-                      <td className="px-6 py-4 text-slate-300 font-medium">
-                        {s.totalMeals}
-                      </td>
-                      <td className="px-6 py-4 text-slate-300">
-                        ${s.totalDeposit.toFixed(2)}
-                      </td>
-                      <td className="px-6 py-4 text-slate-400">
-                        ${s.totalCost.toFixed(2)}
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <div
-                          className={`inline-flex items-center gap-1.5 font-bold px-3 py-1 rounded-full text-sm ${
-                            s.balance >= 0
-                              ? "bg-emerald-500/10 text-emerald-500"
-                              : "bg-rose-500/10 text-rose-500"
-                          }`}
-                        >
-                          {s.balance >= 0 ? (
-                            <TrendingUp className="w-3.5 h-3.5" />
-                          ) : (
-                            <TrendingDown className="w-3.5 h-3.5" />
-                          )}
-                          {s.balance >= 0 ? "+" : ""}
-                          {s.balance.toFixed(2)}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                  {(summary.summaries as MemberSummary[]).map(
+                    (s: MemberSummary) => (
+                      <tr
+                        key={s.id}
+                        className="hover:bg-slate-900/40 transition-colors"
+                      >
+                        <td className="px-6 py-4 font-medium flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold text-indigo-400">
+                            {s.member.name[0]}
+                          </div>
+                          {s.member.name}
+                        </td>
+                        <td className="px-6 py-4 text-slate-300 font-medium">
+                          {s.totalMeals}
+                        </td>
+                        <td className="px-6 py-4 text-slate-300">
+                          ${s.totalDeposit.toFixed(2)}
+                        </td>
+                        <td className="px-6 py-4 text-slate-400">
+                          ${s.totalCost.toFixed(2)}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div
+                            className={`inline-flex items-center gap-1.5 font-bold px-3 py-1 rounded-full text-sm ${
+                              s.balance >= 0
+                                ? "bg-emerald-500/10 text-emerald-500"
+                                : "bg-rose-500/10 text-rose-500"
+                            }`}
+                          >
+                            {s.balance >= 0 ? (
+                              <TrendingUp className="w-3.5 h-3.5" />
+                            ) : (
+                              <TrendingDown className="w-3.5 h-3.5" />
+                            )}
+                            {s.balance >= 0 ? "+" : ""}
+                            {s.balance.toFixed(2)}
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  )}
                 </tbody>
               </table>
             </div>

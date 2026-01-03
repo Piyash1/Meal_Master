@@ -7,6 +7,13 @@ import { format } from "date-fns";
 import { Trash2, PlusCircle, CreditCard, Calendar } from "lucide-react";
 import { isAdmin } from "@/lib/auth-utils";
 
+type Expense = {
+  id: string;
+  title: string;
+  amount: number;
+  date: Date;
+};
+
 export default async function ExpensesPage({
   searchParams,
 }: {
@@ -15,7 +22,10 @@ export default async function ExpensesPage({
   const params = await searchParams;
   const currentMonthYear = params.month || format(new Date(), "yyyy-MM");
   const expenses = await getMonthlyExpenses(currentMonthYear);
-  const total = expenses.reduce((sum, e) => sum + e.amount, 0);
+  const total = (expenses as Expense[]).reduce(
+    (sum: number, e: Expense) => sum + e.amount,
+    0
+  );
   const admin = await isAdmin();
 
   return (
@@ -76,7 +86,7 @@ export default async function ExpensesPage({
                       </td>
                     </tr>
                   ) : (
-                    expenses.map((expense) => (
+                    (expenses as Expense[]).map((expense: Expense) => (
                       <tr
                         key={expense.id}
                         className="hover:bg-slate-900/40 transition-colors"
